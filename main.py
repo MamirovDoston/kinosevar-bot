@@ -5,7 +5,7 @@ import os
 
 RSS_URL = "https://filmsevar.blogspot.com/feeds/posts/default?alt=rss"
 TOKEN = "7781935889:AAGY1F4yhgaWSO68SOk1aCr5Z5vKq7u_l0g"
-CHAT_ID = "@kino_sevarr"
+CHAT_ID = "@spaceition"
 
 async def main():
     bot = telegram.Bot(token=TOKEN)
