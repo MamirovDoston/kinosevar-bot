@@ -1,20 +1,17 @@
 import feedparser
 import telegram
-import time
 import asyncio
 import os
 
-# Ma'lumotlar
-RSS_URL = "https://kinosevarr.blogspot.com/feeds/posts/default?alt=rss"
+# Yangilangan ma'lumotlar
+RSS_URL = "https://filmsevar.blogspot.com/feeds/posts/default?alt=rss"
 TOKEN = "7781935889:AAGY1F4yhgaWSO68SOk1aCr5Z5vKq7u_l0g"
 CHAT_ID = "@kino_sevarr"
 
-last_post_link = ""
-
 async def check_posts():
-    global last_post_link
+    last_post_link = ""
     bot = telegram.Bot(token=TOKEN)
-    print("Bot ishga tushdi...")
+    print("Bot muvaffaqiyatli ishga tushdi...")
     
     while True:
         try:
@@ -26,15 +23,16 @@ async def check_posts():
                 
                 if link != last_post_link:
                     if last_post_link != "":
-                        message = f"🎬 *Yangi maqola chiqdi!*\n\n*{title}*\n\n🔗 O'qish: {link}"
-                        await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode='Markdown')
-                    
+                        message = f"🎬 Yangi maqola chiqdi!\n\n{title}\n\n🔗 O'qish: {link}"
+                        await bot.send_message(chat_id=CHAT_ID, text=message)
+                        print(f"Yuborildi: {title}")
                     last_post_link = link
-                    print(f"Yangilandi: {title}")
         except Exception as e:
-            print(f"Xato yuz berdi: {e}")
+            print(f"Xatolik: {e}")
         
-        await asyncio.sleep(300) # Har 5 daqiqada tekshiradi
+        await asyncio.sleep(300) # 5 daqiqa kutish
 
 if __name__ == "__main__":
-    asyncio.run(check_posts())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(check_posts())
