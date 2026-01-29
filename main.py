@@ -2,11 +2,25 @@ import feedparser
 import telegram
 import asyncio
 import os
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
 
-# Yangilangan ma'lumotlar
+# Ma'lumotlar
 RSS_URL = "https://filmsevar.blogspot.com/feeds/posts/default?alt=rss"
 TOKEN = "7781935889:AAGY1F4yhgaWSO68SOk1aCr5Z5vKq7u_l0g"
 CHAT_ID = "@kino_sevarr"
+
+# Render uchun kichik veb-server (Xatolik chiqmasligi uchun)
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is running")
+
+def run_health_check():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
+    server.serve_forever()
 
 async def check_posts():
     last_post_link = ""
@@ -30,9 +44,12 @@ async def check_posts():
         except Exception as e:
             print(f"Xatolik: {e}")
         
-        await asyncio.sleep(300) # 5 daqiqa kutish
+        await asyncio.sleep(300)
 
 if __name__ == "__main__":
+    # Veb-serverni alohida oqimda yoqish
+    threading.Thread(target=run_health_check, daemon=True).start()
+    # Botni ishga tushirish
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(check_posts())
