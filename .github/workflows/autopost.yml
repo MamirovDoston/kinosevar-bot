@@ -2,8 +2,8 @@ name: Blogger to Telegram Auto Post
 
 on:
   schedule:
-    - cron: '*/15 * * * *' # Har 15 daqiqada ishga tushadi
-  workflow_dispatch: # Qo'lda ham yoqish imkoniyati
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -22,6 +22,12 @@ jobs:
           pip install feedparser python-telegram-bot==20.0
 
       - name: Run bot script
-        env:
-          TOKEN: ${{ secrets.BOT_TOKEN }}
         run: python main.py
+
+      - name: Commit and push if last_link.txt changed
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add last_link.txt
+          git commit -m "Update last sent link" || exit 0
+          git push
